@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>명화 카드 매칭 게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 상단: 스코어와 챕터 -->
+        <header class="game-header">
+            <div class="score-section">
+                <h2>스코어</h2>
+                <p id="score">0</p>
+            </div>
+            <div class="chapter-section">
+                <h1>명화 매칭 게임</h1>
+                <p id="chapter">Chapter 1</p>
+            </div>
+            <div class="moves-section">
+                <h2>시도 횟수</h2>
+                <p id="moves">0</p>
+            </div>
+        </header>
+
+        <!-- 중앙: 4x4 카드 그리드 -->
+        <main class="game-board">
+            <div class="cards-grid" id="cardsGrid">
+                <!-- 카드들이 JavaScript로 생성됩니다 -->
+            </div>
+        </main>
+
+        <!-- 하단: 타이머와 리셋 버튼 -->
+        <footer class="game-footer">
+            <div class="timer-section">
+                <div class="bomb-icon">💣</div>
+                <div class="fuse-container">
+                    <div class="fuse-bar" id="fuseBar"></div>
+                </div>
+                <p id="timer">120초</p>
+            </div>
+            <button id="resetBtn" class="reset-btn">리셋</button>
+        </footer>
+
+        <!-- 게임 오버 모달 -->
+        <div id="gameOverModal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="modalTitle">게임 종료!</h2>
+                <p id="modalMessage"></p>
+                <button id="modalResetBtn" class="modal-btn">다시 시작</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
+

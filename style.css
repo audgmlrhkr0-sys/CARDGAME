@@ -1,0 +1,660 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.1) 2px, rgba(255, 255, 255, 0.1) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.1) 2px, rgba(255, 255, 255, 0.1) 4px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    background: linear-gradient(145deg, #1e1e3f, #2d1b4e);
+    border: 4px solid #00ffff;
+    padding: 30px;
+    box-shadow: 
+        0 0 20px #00ffff,
+        0 0 40px rgba(0, 255, 255, 0.5),
+        8px 8px 0 rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(145deg, #ff00ff, #00ffff);
+    z-index: -1;
+    transform: translate(4px, 4px);
+    opacity: 0.3;
+}
+
+/* 헤더 스타일 */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 4px dashed #00ffff;
+    box-shadow: 0 4px 0 rgba(0, 255, 255, 0.3);
+}
+
+.score-section, .moves-section {
+    text-align: center;
+    background: linear-gradient(145deg, #2a1b4e, #1a0f2e);
+    color: #00ffff;
+    padding: 15px 20px;
+    border: 3px solid #00ffff;
+    min-width: 120px;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 255, 0.8),
+        4px 4px 0 rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+}
+
+.score-section h2, .moves-section h2 {
+    font-size: 10px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.score-section p, .moves-section p {
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        2px 2px 0 rgba(0, 0, 0, 0.8);
+    color: #00ffff;
+}
+
+.chapter-section {
+    text-align: center;
+}
+
+.chapter-section h1 {
+    font-size: 20px;
+    color: #ff00ff;
+    margin-bottom: 10px;
+    text-shadow: 
+        0 0 10px #ff00ff,
+        0 0 20px #ff00ff,
+        3px 3px 0 rgba(0, 0, 0, 0.8);
+    letter-spacing: 2px;
+    animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+.chapter-section p {
+    font-size: 14px;
+    color: #ffff00;
+    text-shadow: 
+        0 0 10px #ffff00,
+        0 0 15px rgba(255, 255, 0, 0.5),
+        2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+@keyframes titleGlow {
+    0% {
+        text-shadow: 
+            0 0 10px #ff00ff,
+            0 0 20px #ff00ff,
+            3px 3px 0 rgba(0, 0, 0, 0.8);
+    }
+    100% {
+        text-shadow: 
+            0 0 20px #ff00ff,
+            0 0 30px #ff00ff,
+            0 0 40px #ff00ff,
+            3px 3px 0 rgba(0, 0, 0, 0.8);
+    }
+}
+
+/* 게임 보드 스타일 */
+.game-board {
+    margin: 30px 0;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.card {
+    aspect-ratio: 3/4;
+    position: relative;
+    cursor: pointer;
+    perspective: 1000px;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.card:hover {
+    transform: translate(-2px, -2px);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.3s steps(10);
+}
+
+.card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card.matched .card-inner {
+    transform: rotateY(180deg) scale(1.1);
+}
+
+.card.matched .card-front {
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 1),
+        0 0 40px rgba(0, 255, 0, 0.6),
+        inset 0 0 15px rgba(0, 255, 0, 0.3);
+    border-color: #00ff00;
+}
+
+.card-front, .card-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.card-front {
+    background: linear-gradient(145deg, #2a1b4e, #1a0f2e);
+    transform: rotateY(180deg);
+    border: 3px solid #00ffff;
+    box-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.6),
+        inset 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border: none;
+    image-rendering: auto;
+}
+
+.card-back {
+    background: linear-gradient(135deg, #1a1a3e, #2d1b4e, #1a1a3e);
+    position: relative;
+    box-shadow: 
+        0 0 15px rgba(255, 0, 255, 0.6),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+/* 깔끔한 트럼프 카드 패턴 */
+.card-back::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* 모서리 장식 */
+        radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.08) 3px, transparent 3px),
+        radial-gradient(circle at 88% 12%, rgba(255, 255, 255, 0.08) 3px, transparent 3px),
+        radial-gradient(circle at 12% 88%, rgba(255, 255, 255, 0.08) 3px, transparent 3px),
+        radial-gradient(circle at 88% 88%, rgba(255, 255, 255, 0.08) 3px, transparent 3px),
+        /* 미묘한 대각선 패턴 */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 20px,
+            rgba(255, 255, 255, 0.02) 20px,
+            rgba(255, 255, 255, 0.02) 22px
+        );
+    background-size: 
+        25% 25%,
+        25% 25%,
+        25% 25%,
+        25% 25%,
+        100% 100%;
+    background-position: 
+        top left,
+        top right,
+        bottom left,
+        bottom right,
+        0 0;
+}
+
+/* 중앙 심플한 다이아몬드 */
+.card-back::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 30%;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    box-shadow: 
+        0 0 15px rgba(255, 0, 255, 0.3),
+        inset 0 0 15px rgba(255, 0, 255, 0.1);
+}
+
+/* 푸터 스타일 */
+.game-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 4px dashed #00ffff;
+    box-shadow: 0 -4px 0 rgba(0, 255, 255, 0.3);
+    position: relative;
+}
+
+.game-footer .reset-btn {
+    position: absolute;
+    right: 0;
+}
+
+.timer-section {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.bomb-icon {
+    font-size: 60px;
+    filter: 
+        drop-shadow(0 0 10px rgba(255, 0, 0, 0.8))
+        drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.8));
+    animation: none;
+}
+
+.fuse-container {
+    width: 300px;
+    height: 30px;
+    background: linear-gradient(145deg, #2a1b4e, #1a0f2e);
+    border: 3px solid #00ffff;
+    box-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.6),
+        4px 4px 0 rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    position: relative;
+}
+
+.fuse-bar {
+    height: 100%;
+    width: 100%;
+    background: repeating-linear-gradient(
+        90deg,
+        #00ff00 0px,
+        #00ff00 10px,
+        #00dd00 10px,
+        #00dd00 20px
+    );
+    transition: width 1s linear;
+    box-shadow: 
+        inset 0 0 10px rgba(0, 255, 0, 0.5),
+        0 0 15px rgba(0, 255, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.fuse-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+    );
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.timer-section p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #00ffff;
+    margin: 0;
+    text-shadow: 
+        0 0 10px #00ffff,
+        0 0 15px rgba(0, 255, 255, 0.5),
+        2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.timer-section.warning .bomb-icon {
+    animation: bombShake 0.3s infinite steps(3);
+}
+
+.timer-section.warning .fuse-bar {
+    background: repeating-linear-gradient(
+        90deg,
+        #ff0000 0px,
+        #ff0000 10px,
+        #ff3300 10px,
+        #ff3300 20px
+    );
+    box-shadow: 
+        inset 0 0 15px rgba(255, 0, 0, 0.8),
+        0 0 20px rgba(255, 0, 0, 1);
+    animation: fuseWarning 0.5s infinite steps(2);
+}
+
+.timer-section.warning .fuse-container {
+    border-color: #ff0000;
+    box-shadow: 
+        0 0 20px rgba(255, 0, 0, 1),
+        4px 4px 0 rgba(0, 0, 0, 0.5);
+    animation: containerShake 0.5s infinite steps(4);
+}
+
+@keyframes bombShake {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-10deg) scale(1.1); }
+    75% { transform: rotate(10deg) scale(1.1); }
+}
+
+@keyframes fuseWarning {
+    0%, 100% { 
+        filter: brightness(1);
+    }
+    50% { 
+        filter: brightness(1.5);
+    }
+}
+
+@keyframes containerShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+@keyframes fuseGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.reset-btn {
+    background: linear-gradient(145deg, #ff00ff, #ff0080);
+    color: #fff;
+    border: 3px solid #000;
+    padding: 15px 35px;
+    font-size: 12px;
+    font-family: 'Press Start 2P', cursive;
+    cursor: pointer;
+    box-shadow: 
+        0 0 15px rgba(255, 0, 255, 0.8),
+        4px 4px 0 rgba(0, 0, 0, 0.5);
+    transition: all 0.1s;
+    text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.8),
+        2px 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.reset-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 
+        0 0 20px rgba(255, 0, 255, 1),
+        6px 6px 0 rgba(0, 0, 0, 0.5);
+    background: linear-gradient(145deg, #ff40ff, #ff40b0);
+}
+
+.reset-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 모달 스타일 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1e1e3f, #2d1b4e);
+    padding: 40px;
+    border: 4px solid #00ffff;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.8),
+        8px 8px 0 rgba(0, 0, 0, 0.8);
+    position: relative;
+}
+
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(145deg, #ff00ff, #00ffff);
+    z-index: -1;
+    transform: translate(4px, 4px);
+    opacity: 0.3;
+}
+
+.modal-content h2 {
+    font-size: 18px;
+    color: #00ffff;
+    margin-bottom: 25px;
+    text-shadow: 
+        0 0 15px #00ffff,
+        0 0 25px rgba(0, 255, 255, 0.5),
+        3px 3px 0 rgba(0, 0, 0, 0.8);
+    line-height: 1.8;
+}
+
+.modal-content p {
+    font-size: 12px;
+    color: #fff;
+    margin-bottom: 30px;
+    line-height: 2;
+    white-space: pre-line;
+}
+
+.modal-btn {
+    background: linear-gradient(145deg, #00ffff, #00aaff);
+    color: #1e1e3f;
+    border: 3px solid #000;
+    padding: 15px 35px;
+    font-size: 12px;
+    font-family: 'Press Start 2P', cursive;
+    cursor: pointer;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 255, 0.8),
+        4px 4px 0 rgba(0, 0, 0, 0.5);
+    transition: all 0.1s;
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.modal-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 1),
+        6px 6px 0 rgba(0, 0, 0, 0.5);
+    background: linear-gradient(145deg, #40ffff, #40ccff);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .container {
+        max-width: 95%;
+    }
+    
+    .cards-grid {
+        max-width: 95%;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .chapter-section h1 {
+        font-size: 14px;
+    }
+    
+    .chapter-section p {
+        font-size: 11px;
+    }
+    
+    .score-section h2, .moves-section h2 {
+        font-size: 8px;
+    }
+    
+    .score-section p, .moves-section p {
+        font-size: 20px;
+    }
+    
+    .modal-content h2 {
+        font-size: 14px;
+    }
+    
+    .modal-content p {
+        font-size: 10px;
+    }
+    
+    .reset-btn {
+        font-size: 10px;
+        padding: 12px 25px;
+    }
+    
+    .timer-section p {
+        font-size: 12px;
+    }
+
+    .cards-grid {
+        gap: 8px;
+    }
+
+    .game-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .game-footer .reset-btn {
+        position: static;
+    }
+    
+    .bomb-icon {
+        font-size: 50px;
+    }
+    
+    .fuse-container {
+        width: 250px;
+        height: 25px;
+    }
+    
+    .timer-section p {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .cards-grid {
+        gap: 5px;
+    }
+    
+    .score-section, .moves-section {
+        padding: 10px 15px;
+        min-width: 100px;
+    }
+    
+    .score-section p, .moves-section p {
+        font-size: 24px;
+    }
+    
+    .bomb-icon {
+        font-size: 40px;
+    }
+    
+    .fuse-container {
+        width: 200px;
+        height: 20px;
+    }
+    
+    .timer-section p {
+        font-size: 18px;
+    }
+}
+
