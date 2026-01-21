@@ -86,6 +86,7 @@ const modalResetBtn = document.getElementById('modalResetBtn');
 const gameOverModal = document.getElementById('gameOverModal');
 const modalTitle = document.getElementById('modalTitle');
 const modalMessage = document.getElementById('modalMessage');
+const museumInfo = document.getElementById('museumInfo');
 const startScreen = document.getElementById('startScreen');
 const startBtn = document.getElementById('startBtn');
 
@@ -93,6 +94,8 @@ const startBtn = document.getElementById('startBtn');
 const bgMusic1 = new Audio('music.mp3');
 const bgMusic2 = new Audio('music2.mp3');
 const matchSound = new Audio('ok.mp3');
+const timeWarningSound = new Audio('time.mp3');
+const gameOverSound = new Audio('over.mp3');
 
 // 배경음악 무한 재생 설정
 bgMusic1.loop = true;
@@ -441,6 +444,11 @@ function startTimer() {
         // 10초 남았을 때 경고
         if (gameState.timeLeft === 10) {
             document.querySelector('.timer-section').classList.add('warning');
+            // 경고 음악 재생
+            timeWarningSound.currentTime = 0;
+            timeWarningSound.play().catch(error => {
+                console.log('경고음 재생 실패:', error);
+            });
         }
 
         // 시간 종료
@@ -457,6 +465,9 @@ function endGame(isWin) {
 
     setTimeout(() => {
         if (isWin) {
+            // 미술관 정보 숨기기 (승리 시에는 메시지에 포함)
+            museumInfo.classList.add('hidden');
+            
             // 마지막 챕터 완료
             if (gameState.currentChapter === 5) {
                 modalTitle.textContent = '🎉 축하합니다! 🎉';
@@ -472,10 +483,29 @@ function endGame(isWin) {
                 gameState.currentChapter++;
             }
         } else {
+            // 모든 음악 멈추기
+            if (currentBgMusic) {
+                currentBgMusic.pause();
+                currentBgMusic.currentTime = 0;
+            }
+            // 타이머 경고음도 멈추기
+            timeWarningSound.pause();
+            timeWarningSound.currentTime = 0;
+            
             modalTitle.textContent = '💣 폭탄 폭발! 💥';
             const currentChapter = chapters[gameState.currentChapter - 1];
-            modalMessage.textContent = `시간이 다 되었습니다!\n\n맞춘 카드: ${gameState.matchedPairs}/${currentChapter.pairs}\n스코어: ${gameState.score}\n시도 횟수: ${gameState.moves}`;
+            modalMessage.textContent = `아쉽네요\n\n━━━━━━━━━━━━━━━━━━━━\n\n점수: ${gameState.score}\n챕터: Chapter ${gameState.currentChapter}\n맞춘 카드: ${gameState.matchedPairs}/${currentChapter.pairs}\n시도 횟수: ${gameState.moves}`;
             modalResetBtn.textContent = '다시 도전';
+            
+            // 미술관 정보 표시
+            museumInfo.textContent = `━━━━━━━━━━━━━━━━━━━━\n\n📍 경북대미술관\n\n주소: 대구광역시 북구 산격동 1370-1\n      IM뱅크문화센터 2층\n\n연락처: 053-950-7968\n\n운영시간:\n월요일 ~ 토요일: 10:00 ~ 18:00\n일요일 및 공휴일: 휴관`;
+            museumInfo.classList.remove('hidden');
+            
+            // 게임 오버 음악 재생
+            gameOverSound.currentTime = 0;
+            gameOverSound.play().catch(error => {
+                console.log('게임 오버음 재생 실패:', error);
+            });
         }
         gameOverModal.classList.remove('hidden');
     }, 1000);
@@ -509,7 +539,16 @@ resetBtn.addEventListener('click', () => initGame(true));
 modalResetBtn.addEventListener('click', () => {
     // 게임 완료 후 처음부터
     if (gameState.currentChapter > 5 || modalResetBtn.textContent === '다시 도전' || modalResetBtn.textContent === '처음부터 다시하기') {
+        // 다시 도전 시 챕터 1 노래로 재시작
+        if (currentBgMusic) {
+            currentBgMusic.pause();
+            currentBgMusic.currentTime = 0;
+        }
         initGame(true);
+        // 챕터 1 음악 시작
+        setTimeout(() => {
+            updateBackgroundMusic();
+        }, 100);
     } else {
         // 다음 챕터
         initGame(false);

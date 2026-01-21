@@ -514,6 +514,17 @@ body {
     white-space: pre-line;
 }
 
+.museum-info {
+    font-size: 12px;
+    color: #00ff00;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #00ff00;
+    line-height: 1.8;
+    white-space: pre-line;
+    text-align: left;
+}
+
 .modal-btn, .start-btn {
     background: #000000;
     color: #00ff00;
@@ -586,37 +597,10 @@ body {
         gap: 15px;
     }
     
-    .chapter-section h1 {
-        font-size: 14px;
-    }
-    
-    .chapter-section p {
-        font-size: 11px;
-    }
-    
-    .score-section h2, .moves-section h2 {
-        font-size: 8px;
-    }
-    
-    .score-section p, .moves-section p {
-        font-size: 20px;
-    }
-    
-    .modal-content h2 {
-        font-size: 14px;
-    }
-    
-    .modal-content p {
-        font-size: 10px;
-    }
+    /* 글자 크기는 기본값 유지 - 모든 기기에서 동일하게 */
     
     .reset-btn {
-        font-size: 10px;
         padding: 12px 25px;
-    }
-    
-    .timer-section p {
-        font-size: 12px;
     }
 
     .cards-grid {
@@ -640,10 +624,6 @@ body {
         width: 250px;
         height: 25px;
     }
-    
-    .timer-section p {
-        font-size: 20px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -660,9 +640,7 @@ body {
         min-width: 100px;
     }
     
-    .score-section p, .moves-section p {
-        font-size: 24px;
-    }
+    /* 글자 크기는 기본값 유지 - 모든 기기에서 동일하게 */
     
     .bomb-icon {
         font-size: 40px;
@@ -671,10 +649,6 @@ body {
     .fuse-container {
         width: 200px;
         height: 20px;
-    }
-    
-    .timer-section p {
-        font-size: 18px;
     }
 }
 
