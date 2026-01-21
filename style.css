@@ -9,8 +9,17 @@
     image-rendering: crisp-edges;
 }
 
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('https://fonts.gstatic.com/s/pressstart2p/v14/e3t4euO8T-267oIAQAu6jDQyK0nSgPJE4580.woff2') format('woff2'),
+         url('https://fonts.gstatic.com/s/pressstart2p/v14/e3t4euO8T-267oIAQAu6jDQyK0nSgPJE4580.woff') format('woff');
+    font-display: swap;
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'Press Start 2P', 'Courier New', Courier, monospace, cursive;
     background: #1a1a2e;
     background-image: 
         repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(0, 0, 0, 0.2) 4px, rgba(0, 0, 0, 0.2) 8px),
@@ -432,7 +441,7 @@ body {
     border: 3px solid #00ff00;
     padding: 15px 35px;
     font-size: 14px;
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'Press Start 2P', 'Courier New', Courier, monospace, cursive;
     cursor: pointer;
     box-shadow: 
         4px 4px 0 rgba(0, 0, 0, 0.8);
@@ -531,7 +540,7 @@ body {
     border: 3px solid #00ff00;
     padding: 20px 50px;
     font-size: 16px;
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'Press Start 2P', 'Courier New', Courier, monospace, cursive;
     cursor: pointer;
     box-shadow: 
         4px 4px 0 rgba(0, 0, 0, 0.8);
