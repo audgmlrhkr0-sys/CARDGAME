@@ -86,9 +86,26 @@ const modalResetBtn = document.getElementById('modalResetBtn');
 const gameOverModal = document.getElementById('gameOverModal');
 const modalTitle = document.getElementById('modalTitle');
 const modalMessage = document.getElementById('modalMessage');
+const startScreen = document.getElementById('startScreen');
+const startBtn = document.getElementById('startBtn');
+
+// 오디오 요소
+const bgMusic1 = new Audio('music.mp3');
+const bgMusic2 = new Audio('music2.mp3');
+const matchSound = new Audio('ok.mp3');
+
+// 배경음악 무한 재생 설정
+bgMusic1.loop = true;
+bgMusic2.loop = true;
+
+// 현재 재생 중인 배경음악
+let currentBgMusic = null;
+
+// 게임 시작 화면 표시 여부
+let gameStartedFromButton = false;
 
 // 게임 초기화
-function initGame(resetChapter = false) {
+function initGame(resetChapter = false, showStartScreen = false) {
     // 타이머 정지
     if (gameState.timerInterval) {
         clearInterval(gameState.timerInterval);
@@ -131,6 +148,15 @@ function initGame(resetChapter = false) {
     
     // 모달 숨기기
     gameOverModal.classList.add('hidden');
+    
+    // 시작 화면 표시 여부 확인
+    if (showStartScreen || (!gameStartedFromButton && resetChapter)) {
+        startScreen.classList.remove('hidden');
+        return; // 게임 시작 버튼을 기다림
+    }
+    
+    // 시작 화면 숨기기
+    startScreen.classList.add('hidden');
 
     // 타이머 섹션 경고 제거
     document.querySelector('.timer-section').classList.remove('warning');
@@ -138,13 +164,50 @@ function initGame(resetChapter = false) {
     // 카드 생성
     createCards();
     
+    // 배경음악 재생
+    if (gameStartedFromButton) {
+        updateBackgroundMusic();
+    }
+    
     // 5초간 카드 미리보기
     showPreview();
+}
+
+// 게임 시작 버튼 클릭 핸들러
+function startGameFromButton() {
+    gameStartedFromButton = true;
+    startScreen.classList.add('hidden');
+    // 배경음악 재생 시작
+    updateBackgroundMusic();
+    initGame(true, false);
 }
 
 // 챕터 업데이트
 function updateChapter() {
     chapterElement.textContent = `Chapter ${gameState.currentChapter}`;
+    // 배경음악 변경
+    updateBackgroundMusic();
+}
+
+// 배경음악 변경
+function updateBackgroundMusic() {
+    // 현재 재생 중인 음악 정지
+    if (currentBgMusic) {
+        currentBgMusic.pause();
+        currentBgMusic.currentTime = 0;
+    }
+    
+    // 챕터에 따라 음악 선택
+    if (gameState.currentChapter <= 2) {
+        currentBgMusic = bgMusic1;
+    } else {
+        currentBgMusic = bgMusic2;
+    }
+    
+    // 새 음악 재생
+    currentBgMusic.play().catch(error => {
+        console.log('배경음악 재생 실패:', error);
+    });
 }
 
 // 카드 생성 및 섞기
@@ -175,13 +238,22 @@ function createCards() {
 
     gameState.cards = cardPairs;
 
-    // 그리드 레이아웃 설정
-    cardsGrid.style.gridTemplateColumns = `repeat(${currentChapter.gridCols}, 1fr)`;
+    // 그리드 레이아웃 설정 - 최대 10열로 고정 (챕터 5 기준)
+    cardsGrid.style.gridTemplateColumns = `repeat(10, 1fr)`;
+    
+    // 각 챕터별로 카드가 중앙 정렬되도록 계산
+    const cols = currentChapter.gridCols;
+    const startCol = Math.floor((10 - cols) / 2) + 1; // CSS grid는 1부터 시작
 
     // 카드 DOM 생성
     cardsGrid.innerHTML = '';
     cardPairs.forEach((card, index) => {
         const cardElement = createCardElement(card, index);
+        // 각 카드의 그리드 위치 계산 (중앙 정렬)
+        const row = Math.floor(index / cols);
+        const col = (index % cols) + startCol;
+        cardElement.style.gridColumn = `${col} / ${col + 1}`;
+        cardElement.style.gridRow = `${row + 1} / ${row + 2}`;
         cardsGrid.appendChild(cardElement);
     });
 }
@@ -323,6 +395,12 @@ function handleMatch(firstIndex, secondIndex) {
     firstCard.classList.add('matched');
     secondCard.classList.add('matched');
 
+    // 매칭 성공 효과음 재생
+    matchSound.currentTime = 0;
+    matchSound.play().catch(error => {
+        console.log('효과음 재생 실패:', error);
+    });
+
     // 0.5초 후 카드 사라지기
     setTimeout(() => {
         firstCard.style.opacity = '0';
@@ -381,8 +459,8 @@ function endGame(isWin) {
         if (isWin) {
             // 마지막 챕터 완료
             if (gameState.currentChapter === 5) {
-                modalTitle.textContent = '🏆 게임 완료! 🏆';
-                modalMessage.textContent = `모든 챕터를 클리어했습니다!\n\n최종 스코어: ${gameState.score}\n총 시도 횟수: ${gameState.moves}`;
+                modalTitle.textContent = '🎉 축하합니다! 🎉';
+                modalMessage.textContent = `모든 챕터를 클리어했습니다!\n\n최종 스코어: ${gameState.score}\n총 시도 횟수: ${gameState.moves}\n\n━━━━━━━━━━━━━━━━━━━━\n\n📍 경북대미술관\n\n주소: 대구광역시 북구 산격동 1370-1\n      IM뱅크문화센터 2층\n\n연락처: 053-950-7968\n\n운영시간:\n월요일 ~ 토요일: 10:00 ~ 18:00\n일요일 및 공휴일: 휴관`;
                 modalResetBtn.textContent = '처음부터 다시하기';
             } else {
                 // 다음 챕터로
@@ -441,15 +519,21 @@ modalResetBtn.addEventListener('click', () => {
 // 테스트용 단축키: Q 키로 다음 챕터
 document.addEventListener('keydown', (e) => {
     if (e.key === 'q' || e.key === 'Q') {
-        if (gameState.currentChapter < 5) {
+        if (gameState.currentChapter <= 5) {
             // 타이머 정지
             if (gameState.timerInterval) {
                 clearInterval(gameState.timerInterval);
             }
             // 다음 챕터로
-            gameState.currentChapter++;
-            initGame(false);
-            console.log(`🎮 테스트 모드: Chapter ${gameState.currentChapter}로 이동`);
+            if (gameState.currentChapter === 5) {
+                // 챕터 5 완료 처리
+                endGame(true);
+                console.log('🎮 테스트 모드: 게임 완료');
+            } else {
+                gameState.currentChapter++;
+                initGame(false);
+                console.log(`🎮 테스트 모드: Chapter ${gameState.currentChapter}로 이동`);
+            }
         } else {
             console.log('⚠️ 이미 마지막 챕터입니다.');
         }
@@ -460,9 +544,12 @@ document.addEventListener('keydown', (e) => {
 async function startGame() {
     // 세로 비율 이미지 필터링
     await filterVerticalImages();
-    // 게임 초기화
-    initGame();
+    // 게임 초기화 (시작 화면 표시)
+    initGame(true, true);
 }
+
+// 게임 시작 버튼 이벤트
+startBtn.addEventListener('click', startGameFromButton);
 
 // 게임 시작
 startGame();

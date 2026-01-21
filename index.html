@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>명화 카드 매칭 게임</title>
+    <title>경북대미술관 소장품 맞추기</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
                 <p id="score">0</p>
             </div>
             <div class="chapter-section">
-                <h1>명화 매칭 게임</h1>
+                <h1>경북대미술관 소장품 맞추기</h1>
                 <p id="chapter">Chapter 1</p>
             </div>
             <div class="moves-section">
@@ -42,6 +42,14 @@
             </div>
             <button id="resetBtn" class="reset-btn">리셋</button>
         </footer>
+
+        <!-- 게임 시작 화면 -->
+        <div id="startScreen" class="modal">
+            <div class="modal-content start-screen-content">
+                <h2 class="game-title">경북대미술관<br>소장품 맞추기</h2>
+                <button id="startBtn" class="start-btn">게임 시작</button>
+            </div>
+        </div>
 
         <!-- 게임 오버 모달 -->
         <div id="gameOverModal" class="modal hidden">
